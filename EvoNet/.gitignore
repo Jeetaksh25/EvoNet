@@ -1,6 +1,18 @@
-node_modules
-dist
-out
-.DS_Store
-.eslintcache
+# Node / frontend
+node_modules/
+dist/
+out/
+
+# Logs
 *.log*
+
+# OS
+.DS_Store
+
+# Cache
+.eslintcache
+
+# Python
+.venv/
+__pycache__/
+*.pyc
