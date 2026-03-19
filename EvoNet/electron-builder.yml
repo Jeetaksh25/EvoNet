@@ -1,47 +1,58 @@
 appId: com.evonet.app
 productName: evonet
+
 directories:
+  output: dist-installer
   buildResources: build
+
 files:
-  - '!**/.vscode/*'
-  - '!src/*'
-  - '!electron.vite.config.{js,ts,mjs,cjs}'
-  - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
-  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - dist/**
+  - package.json
+
+extraResources:
+  - from: resources/model
+    to: model
 
 asarUnpack:
-  - resources/**
+  - model/**
 
 win:
   executableName: evonet
+  target:
+    - nsis
+
 nsis:
-  artifactName: ${name}-${version}-setup.${ext}
-  shortcutName: ${productName}
-  uninstallDisplayName: ${productName}
+  oneClick: false
+  allowToChangeInstallationDirectory: true
   createDesktopShortcut: always
+  shortcutName: evonet
+  uninstallDisplayName: evonet
+  artifactName: ${productName}-${version}-setup.${ext}
+
 mac:
   entitlementsInherit: build/entitlements.mac.plist
-  extendInfo:
-    - NSCameraUsageDescription: Application requests access to the device's camera.
-    - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
-    - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
-    - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
   notarize: false
-dmg:
-  artifactName: ${name}-${version}.${ext}
+  extendInfo:
+    NSCameraUsageDescription: Application requests access to the device's camera.
+    NSMicrophoneUsageDescription: Application requests access to the device's microphone.
+    NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
+    NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
+
 linux:
   target:
     - AppImage
     - snap
     - deb
-    
-  maintainer: electronjs.org
+  maintainer: evonet
   category: Utility
 
 appImage:
-  artifactName: ${name}-${version}.${ext}
-npmRebuild: false
+  artifactName: ${productName}-${version}.${ext}
+
+npmRebuild: true
 
 publish:
-  provider: generic
-  url: https://example.com/auto-updates
+  provider: github
+  releaseType: release
+  owner: Jeetaksh25
+  repo: EvoNet

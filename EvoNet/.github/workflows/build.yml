@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Build EvoNet Installer (Electron + Python)
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      # 1️⃣ Checkout
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup Python
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # 3️⃣ Install deps
+      - name: Install Python dependencies
+        run: |
+          pip install numpy pillow pyinstaller
+
+      # 4️⃣ Build EXE from YOUR actual folder
+      - name: Build Python EXE
+        run: |
+          cd src/model
+          pyinstaller --onefile --add-data "ga_best_weights.npy;." predict.py
+
+      # 5️⃣ Copy EXE → resources (IMPORTANT STEP)
+      - name: Prepare resources folder
+        run: |
+          mkdir resources\model
+          copy src\model\dist\predict.exe resources\model\predict.exe
+
+      # 6️⃣ Setup Node
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      # 7️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # 8️⃣ Build Electron
+      - name: Build & Publish
+        run: npm run build:win
+        env:
+            NODE_OPTIONS: --max-old-space-size=8192
+            GH_TOKEN: ${{ secrets.GH_TOKEN }}
