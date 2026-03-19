@@ -9,7 +9,7 @@ digits_dataset = load_digits()
 input_features = digits_dataset.data / 16.0
 target_labels = digits_dataset.target
 
-x_train, x_test, y_train, y_test = train_test_split(
+x_train, x_val, y_train, y_val = train_test_split(
     input_features,
     target_labels,
     test_size=0.2,
@@ -85,9 +85,9 @@ def evaluate_population(population):
         predictions = neural_network_forward(x_train, chromosome)
 
         accuracy = accuracy_score(y_train, predictions)
-        #penalty = 0.0001 * np.sum(chromosome ** 2)
 
-        fitness_scores.append(accuracy)
+        penalty = 0.00001 * np.mean(chromosome ** 2)
+        fitness_scores.append(accuracy - penalty)
 
     return np.array(fitness_scores)
 
@@ -172,9 +172,9 @@ best_index = np.argmax(fitness_scores)
 
 best_chromosome = population[best_index]
 
-test_predictions = neural_network_forward(x_test, best_chromosome)
+test_predictions = neural_network_forward(x_val, best_chromosome)
 
-test_accuracy = accuracy_score(y_test, test_predictions)
+test_accuracy = accuracy_score(y_val, test_predictions)
 
 print("\nFinal Test Accuracy:", test_accuracy)
 
@@ -185,8 +185,9 @@ current_dir = os.path.dirname(__file__)
 # Save Model
 weights_path = os.path.join(current_dir, "ga_best_weights.npy")
 np.save(weights_path, best_chromosome)
-
+print("Saved Model")
 
 # Save History
 history_path = os.path.join(current_dir, "fitness_history.npy")
 np.save(history_path, generation_history)
+print("Saved History")
