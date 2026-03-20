@@ -1,8 +1,9 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
-const api = {}
-
+const api = {
+  predictDigit: (base64) => ipcRenderer.invoke('predict-digit', base64)
+}
 
 if (process.contextIsolated) {
   try {

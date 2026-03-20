@@ -2,6 +2,8 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import { spawn } from 'child_process'
+import path from 'path'
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
@@ -59,3 +61,47 @@ app.on('window-all-closed', () => {
   }
 })
 
+
+
+// Prediction Model Functions
+
+ipcMain.handle('predict-digit', async (_, base64Image) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const isDev = !app.isPackaged
+
+      const exePath = isDev
+        ? path.join(__dirname, '../../resources/model/predict.exe')
+        : path.join(process.resourcesPath, 'model', 'predict.exe')
+
+      const py = spawn(exePath, [base64Image])
+
+      let data = ''
+      let error = ''
+
+      py.stdout.on('data', (chunk) => {
+        data += chunk.toString()
+      })
+
+      py.stderr.on('data', (err) => {
+        error += err.toString()
+      })
+
+      py.on('close', (code) => {
+        if (code !== 0) {
+          console.error('stderr:', error)
+          return reject(`Process exited with code ${code}: ${error}`)
+        }
+      
+        try {
+          const result = JSON.parse(data.replace(/'/g, '"'))
+          resolve(result)
+        } catch (e) {
+          reject('Invalid Python output: ' + data)
+        }
+      })
+    } catch (err) {
+      reject(err)
+    }
+  })
+})
