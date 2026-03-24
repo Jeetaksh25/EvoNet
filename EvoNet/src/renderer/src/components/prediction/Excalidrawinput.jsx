@@ -42,9 +42,6 @@ const ExcalidrawInput = forwardRef((props, ref) => {
     isOpenRef.current = false
     setIsExporting(true)
 
-    const setPredictionStep = usePredictionStore.getState().setPredictionStep
-    const setResult = usePredictionStore.getState().setResult
-
     try {
       const api = excalidrawRef.current
       console.log('api:', api) // ← is the ref populated?
@@ -94,8 +91,6 @@ const ExcalidrawInput = forwardRef((props, ref) => {
     } finally {
       setIsOpen(false)
       setIsExporting(false)
-      setPredictionStep('raw')
-      setResult(null)
     }
   }, [setExcalidrawData, setDrawnImageBase64, setExcalidrawThumbnail])
 
@@ -136,8 +131,8 @@ const ExcalidrawInput = forwardRef((props, ref) => {
         border="2px dashed"
         borderColor={isEmpty ? '#00ffe044' : '#00ffe0aa'}
         borderRadius="xl"
-        w="220px"
-        h="220px"
+        w="200px"
+        h="200px"
         display="flex"
         flexDirection="column"
         alignItems="center"

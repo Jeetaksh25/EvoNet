@@ -14,6 +14,8 @@ const MotionBox = motion(Box)
 
 const FrontPage = () => {
   const [loading, setLoading] = useState(false)
+  const [showWorking, setShowWorking] = useState(false)
+  const [predictionImage, setPredictionImage] = useState(null)
   const excalidrawInputRef = useRef()
 
   const navigate = useNavigate()
@@ -44,8 +46,11 @@ const FrontPage = () => {
     }
 
     setLoading(true)
+    setShowWorking(false)
     setResult(null)
-    usePredictionStore.getState().setPredictionStep('raw')
+    setPredictionImage(latestBase64)
+    await new Promise((r) => setTimeout(r, 100))
+    setShowWorking(true)
 
     try {
       const res = await window.api.predictDigit(latestBase64)
@@ -86,8 +91,8 @@ const FrontPage = () => {
         />
       </Flex>
 
-      {drawnImageBase64 && (
-        <PredictionWorkingBox rawImageBase64={drawnImageBase64} result={result} />
+      {showWorking && predictionImage && (
+        <PredictionWorkingBox rawImageBase64={predictionImage} result={result} />
       )}
     </Box>
   )

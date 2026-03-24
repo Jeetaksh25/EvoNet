@@ -70,19 +70,16 @@ const STEPS = {
 }
 
 const PredictionWorkingBox = ({ rawImageBase64, result }) => {
+  const [step, setStep] = useState(STEPS.RAW)
   const bottomRef = useRef(null)
 
   const navigate = useNavigate()
-
-  const step = usePredictionStore((s) => s.predictionStep)
-  const setStep = usePredictionStore((s) => s.setPredictionStep)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
   }, [step])
 
   useEffect(() => {
-    if (step !== STEPS.RAW) return
     const t1 = setTimeout(() => setStep(STEPS.PROCESSING), 1200)
     const t2 = setTimeout(() => setStep(STEPS.SCANNING), 3000)
     const t3 = setTimeout(() => setStep(STEPS.RESULT), 9500)
@@ -91,7 +88,7 @@ const PredictionWorkingBox = ({ rawImageBase64, result }) => {
       clearTimeout(t2)
       clearTimeout(t3)
     }
-  }, [step])
+  }, [])
 
   const prediction = result?.prediction
   const allConf = result?.all_confidences ?? []
@@ -101,6 +98,18 @@ const PredictionWorkingBox = ({ rawImageBase64, result }) => {
     filter: 'invert(1) contrast(1.6) brightness(1.2)',
     imageRendering: 'pixelated'
   }
+
+  useEffect(() => {
+    const sendToast = () => {
+      if (step === STEPS.RESULT && result) {
+        handleToast('success', `Prediction successful: ${result.prediction}`)
+      }
+    }
+    sendToast()
+    return () => {
+      clearTimeout(sendToast)
+    }
+  }, [step, result])
 
   return (
     <MotionBox
