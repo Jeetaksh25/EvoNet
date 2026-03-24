@@ -11,6 +11,7 @@ import NeuralNetViz from '../components/stats/NeuralNetViz'
 import FitnessChart from '../components/stats/FitnessChart'
 import ConfidenceChart from '../components/stats/ConfidenceChart'
 import PixelHeatmap from '../components/stats/PixelHeatmap'
+import { theme } from '../theme/theme'
 
 const MotionBox = motion(Box)
 const MotionGrid = motion(Grid)
@@ -43,8 +44,16 @@ const StatsPage = () => {
 
   return (
     <Box w="100%" minH="100vh" display="flex" justifyContent="center" alignItems="flex-start">
-      <Box w="90%" mx="auto" position="relative" zIndex={1} p={10} bg="rgba(0,0,0,0.5)" my={8} borderRadius="2xl">
-
+      <Box
+        w="90%"
+        mx="auto"
+        position="relative"
+        zIndex={1}
+        p={10}
+        bg="rgba(0,0,0,0.5)"
+        my={8}
+        borderRadius="2xl"
+      >
         <MotionBox variants={fadeUp} initial="hidden" animate="show" custom={0} mb={8}>
           <Flex align="center" justify="space-between">
             <HeadingText text="Model Analytics" />
@@ -73,17 +82,22 @@ const StatsPage = () => {
               { label: 'Val Accuracy', val: `${(modelMeta.valAccuracy * 100).toFixed(2)}%` }
             ].map(({ label, val }) => (
               <GridItem key={label}>
-                <Box bg="#0d1117" border="1px solid #ffffff0f" borderRadius="xl" p={4}>
+                <Box
+                  bg={theme.color.secondary}
+                  border="1px solid #ffffff0f"
+                  borderRadius="xl"
+                  p={4}
+                >
                   <Text
-                    fontSize="9px"
+                    fontSize="0.9em"
                     letterSpacing="0.2em"
-                    color="#ffffff44"
+                    color={theme.color.primary}
                     textTransform="uppercase"
                     mb={1}
                   >
                     {label}
                   </Text>
-                  <Text fontSize="16px" fontWeight="700" color="#00ffe0">
+                  <Text fontSize="1.2em" fontWeight="700" color={theme.color.tertiary}>
                     {val}
                   </Text>
                 </Box>
@@ -93,13 +107,11 @@ const StatsPage = () => {
         )}
 
         <Grid templateColumns="1.6fr 1fr" gap={6} mb={6}>
-          <StatCard label="Fitness History — 400 Generations" custom={2} h="280px">
+          <StatCard label="Fitness History: 400 Generations" custom={2} h="280px">
             <FitnessChart />
           </StatCard>
-          <StatCard label="Neural Network — 3D" custom={3} h="280px">
-            <Box h="210px">
-              <NeuralNetViz />
-            </Box>
+          <StatCard label="3D Neural Network" custom={3} h="280px">
+            <NeuralNetViz />
           </StatCard>
         </Grid>
 
@@ -107,7 +119,7 @@ const StatsPage = () => {
           <StatCard label="Confidence per Digit" custom={4} h="280px">
             <ConfidenceChart />
           </StatCard>
-          <StatCard label="Processed Input — 16×16 Heatmap" custom={5} h="280px">
+          <StatCard label="Processed Input: 16×16 Heatmap" custom={5} h="280px">
             <PixelHeatmap />
           </StatCard>
         </Grid>
@@ -124,22 +136,21 @@ const StatsPage = () => {
             ].map(([label, val]) => (
               <Box key={label} textAlign="center">
                 <Text
-                  fontSize="9px"
+                  fontSize="0.8em"
                   letterSpacing="0.15em"
-                  color="#ffffff33"
+                  color={theme.color.primary}
                   textTransform="uppercase"
                   mb={1}
                 >
                   {label}
                 </Text>
-                <Text fontSize="13px" fontWeight="600" color="#0080ff">
+                <Text fontSize="1.2em" fontWeight="600" color={theme.color.tertiary}>
                   {val}
                 </Text>
               </Box>
             ))}
           </Grid>
         </StatCard>
-
       </Box>
     </Box>
   )

@@ -20,7 +20,7 @@ const StatCard = ({ label, children, custom = 0, h, ...props }) => (
       <Text
         fontSize="1em"
         letterSpacing="0.2em"
-        color="#00ffe088"
+        color={theme.color.primary}
         textTransform="uppercase"
         mb={3}
         fontWeight="600"
