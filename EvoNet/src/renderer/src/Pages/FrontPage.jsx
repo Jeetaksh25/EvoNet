@@ -93,7 +93,7 @@ const FrontPage = () => {
         />
       </Flex>
 
-      {showWorking && predictionImage && result && (
+      {showWorking && predictionImage && (
         <PredictionWorkingBox rawImageBase64={predictionImage} result={result} />
       )}
     </Box>

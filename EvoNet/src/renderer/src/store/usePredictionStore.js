@@ -8,9 +8,6 @@ export const usePredictionStore = create((set, get) => ({
   predictionImage: null,
   showWorking: false,
 
-  predictionImage: null,
-  showWorking: false,
-
   setPredictionImage: (img) => set({ predictionImage: img }),
   setShowWorking: (val) => set({ showWorking: val }),
 

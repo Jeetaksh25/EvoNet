@@ -81,15 +81,17 @@ const PredictionWorkingBox = ({ rawImageBase64, result }) => {
 
   useEffect(() => {
     if (result) return
+  
     const t1 = setTimeout(() => setStep(STEPS.PROCESSING), 1200)
     const t2 = setTimeout(() => setStep(STEPS.SCANNING), 3000)
     const t3 = setTimeout(() => setStep(STEPS.RESULT), 9500)
+  
     return () => {
       clearTimeout(t1)
       clearTimeout(t2)
       clearTimeout(t3)
     }
-  }, [result])
+  }, [])
 
   const prediction = result?.prediction
   const allConf = result?.all_confidences ?? []

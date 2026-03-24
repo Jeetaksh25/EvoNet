@@ -1,11 +1,12 @@
 import { Box, Text } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
+import { theme } from '../../theme/theme'
 
 const MotionBox = motion(Box)
 
 const StatCard = ({ label, children, custom = 0, h, ...props }) => (
   <MotionBox
-    bg="#0d1117"
+    bg={theme.color.secondary}
     border="1px solid #ffffff0f"
     borderRadius="xl"
     p={5}
@@ -17,7 +18,7 @@ const StatCard = ({ label, children, custom = 0, h, ...props }) => (
   >
     {label && (
       <Text
-        fontSize="10px"
+        fontSize="1em"
         letterSpacing="0.2em"
         color="#00ffe088"
         textTransform="uppercase"

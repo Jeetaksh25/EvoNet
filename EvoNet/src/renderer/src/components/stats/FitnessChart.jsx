@@ -6,24 +6,30 @@ import {
   Inject,
   SplineAreaSeries,
   Tooltip,
-  Crosshair
+  Crosshair,
+  SplineSeries
 } from '@syncfusion/ej2-react-charts'
 import { usePredictionStore } from '../../store/usePredictionStore'
-
-const axisStyle = {
-  labelStyle: { color: '#ffffff44', fontFamily: 'IBM Plex Mono', size: '10px' },
-  lineStyle: { color: '#ffffff12' },
-  majorGridLines: { color: '#ffffff08' },
-  majorTickLines: { width: 0 }
-}
+import { theme } from '../../theme/theme'
 
 const FitnessChart = () => {
   const fitnessHistory = usePredictionStore((s) => s.fitnessHistory)
 
   const data = fitnessHistory.map((v, i) => ({
-    x: i,
-    y: parseFloat((v * 100).toFixed(2))
+    generation: i + 1,
+    accuracy: +(v * 100).toFixed(2)
   }))
+
+  const values = data.map((d) => d.accuracy)
+  const minY = values.length ? Math.min(...values) : 0
+  const maxY = values.length ? Math.max(...values) : 100
+
+  const axisStyle = {
+    labelStyle: { color: '#aaa', fontFamily: 'IBM Plex Mono', size: '10px' },
+    lineStyle: { color: '#333' },
+    majorGridLines: { color: '#222' },
+    majorTickLines: { width: 0 }
+  }
 
   if (data.length === 0) {
     return (
@@ -39,26 +45,41 @@ const FitnessChart = () => {
         height="200px"
         background="transparent"
         primaryXAxis={{ ...axisStyle, minimum: 0, maximum: fitnessHistory.length }}
-        primaryYAxis={{ ...axisStyle, minimum: 60, maximum: 80, labelFormat: '{value}%' }}
+        primaryYAxis={{
+          ...axisStyle,
+          minimum: Math.floor(minY - 2),
+          maximum: Math.ceil(maxY + 2),
+          labelFormat: '{value}%'
+        }}
         tooltip={{
           enable: true,
-          fill: '#0d1117',
-          border: { color: '#00ffe044' },
-          textStyle: { fontFamily: 'IBM Plex Mono', color: '#00ffe0', size: '10px' }
+          format: 'Gen ${point.x} : ${point.y}%',
+          fill: '#111',
+          border: { color: '#00ffe0' },
+          textStyle: {
+            color: 'white',
+            fontFamily: 'IBM Plex Mono',
+            size: '11px'
+          }
         }}
+        titleStyle={{ color: theme.color.primary, fontFamily: 'IBM Plex Mono', size: '0.4em' }}
+        title="Model Training Progress (Accuracy vs Generations)"
         crosshair={{ enable: true, lineType: 'Vertical', line: { color: '#00ffe022' } }}
         chartArea={{ border: { width: 0 } }}
       >
-        <Inject services={[SplineAreaSeries, Tooltip, Crosshair]} />
+        <Inject services={[SplineSeries, Tooltip, Crosshair]} />
         <SeriesCollectionDirective>
           <SeriesDirective
             dataSource={data}
-            xName="x"
-            yName="y"
-            type="SplineArea"
-            fill="#00ffe010"
-            border={{ color: '#00ffe0', width: 2 }}
-            opacity={0.6}
+            xName="generation"
+            yName="accuracy"
+            type="Spline"
+            width={3}
+            marker={{
+              visible: true,
+              width: 6,
+              height: 6
+            }}
           />
         </SeriesCollectionDirective>
       </ChartComponent>
