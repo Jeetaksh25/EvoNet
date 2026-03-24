@@ -1,61 +1,72 @@
-import { useState } from 'react'
-import { Box, Text, Button, Input, Spinner } from '@chakra-ui/react'
+import { useState, useRef, useCallback } from 'react'
+import { Box, Text, Button, Flex, Grid, GridItem, Spinner, Image, Input } from '@chakra-ui/react'
+import { motion, AnimatePresence } from 'framer-motion'
+import '@excalidraw/excalidraw/index.css'
+import Background from './components/Background'
+import { theme } from './theme/theme'
+import { Routes, Route, useNavigate } from 'react-router-dom'
+import FrontPage from './Pages/FrontPage'
+import { StatsPage } from './Pages/Statspage'
+import { ToastContainer } from 'react-toastify'
+
+const MotionBox = motion(Box)
 
 const App = () => {
-  const [image, setImage] = useState(null)
   const [result, setResult] = useState(null)
-  const [loading, setLoading] = useState(false)
-
-  const handleFile = (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-
-    setResult(null)
-
-    const reader = new FileReader()
-    reader.onload = () => {
-      setImage(reader.result)
-    }
-    reader.readAsDataURL(file)
-  }
-
-  const handlePredict = async () => {
-    if (!image || loading) return
-
-    setLoading(true)
-    try {
-      const res = await window.api.predictDigit(image)
-      setResult(res)
-      console.log(res)
-    } catch (err) {
-      console.error(err)
-    }
-    setLoading(false)
-  }
+  const navigate = useNavigate()
 
   return (
-    <Box p={5}>
-      <Text fontSize="2xl" mb={4}>EvoNet Test</Text>
+    <MotionBox
+      bg={theme.color.secondary}
+      w="100%"
+      minH="100vh"
+      color={theme.color.text}
+      position="relative"
+      initial={{
+        opacity: 0,
+        scale: 0.96,
+        filter: 'blur(12px)',
+        boxShadow: `0 0 0px ${theme.color.primary}`
+      }}
+      animate={{
+        opacity: 1,
+        scale: 1,
+        filter: 'blur(0px)',
+        boxShadow: `0 0 80px ${theme.color.glow}`
+      }}
+      transition={{
+        duration: 0.8,
+        ease: [0.16, 1, 0.3, 1]
+      }}
+    >
+      <Background />
 
-      <Input type="file" accept="image/*" onChange={handleFile} />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Flex minH="100vh" align="center" justify="center">
+              <FrontPage />
+            </Flex>
+          }
+        />
 
-      {image && (
-        <Box mt={4}>
-          <img src={image} width="120" />
-        </Box>
-      )}
+        <Route path="/stats" element={<StatsPage result={result} onBack={() => navigate('/')} />} />
+      </Routes>
 
-      <Button mt={4} onClick={handlePredict} isLoading={loading}>
-        {loading ? <Spinner /> : 'Predict'}
-      </Button>
-
-      {result && (
-        <Box mt={4}>
-          <Text>Prediction: {result.prediction}</Text>
-          <Text>Confidence: {(result.confidence * 100).toFixed(2)}%</Text>
-        </Box>
-      )}
-    </Box>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+    </MotionBox>
   )
 }
 

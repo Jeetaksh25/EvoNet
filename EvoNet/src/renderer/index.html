@@ -4,9 +4,21 @@
     <meta charset="UTF-8" />
     <title>EvoNet</title>
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:"
+      content=" 
+    default-src 'self'; 
+    script-src 'self' 'unsafe-eval'; 
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; 
+    style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com; 
+    font-src 'self' https://fonts.gstatic.com data:; 
+    img-src 'self' data: blob:; 
+    connect-src 'self' http://localhost:* ws://localhost:* https:; 
+    "
     />
   </head>
 

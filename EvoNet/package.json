@@ -11,7 +11,7 @@
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
     "build": "electron-vite build",
-    "postinstall": "electron-builder install-app-deps",
+    "postinstall": "electron-builder install-app-deps && npx syncfusion-license activate",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "npm run build && electron-builder --mac",
@@ -23,11 +23,17 @@
     "@electron-toolkit/utils": "^4.0.0",
     "@emotion/react": "^11.14.0",
     "@excalidraw/excalidraw": "^0.18.0",
-    "@syncfusion/ej2-react-grids": "^32.2.9",
+    "@syncfusion/ej2-react-charts": "^33.1.44",
+    "@syncfusion/ej2-react-grids": "^33.1.45",
+    "@syncfusion/ej2-react-heatmap": "^33.1.44",
     "electron-updater": "^6.3.9",
+    "framer-motion": "^12.38.0",
     "next-themes": "^0.4.6",
+    "react-hot-toast": "^2.6.0",
     "react-icons": "^5.6.0",
-    "react-router-dom": "^7.13.1"
+    "react-router-dom": "^7.13.1",
+    "react-toastify": "^11.0.5",
+    "three": "^0.183.2"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^2.1.0",

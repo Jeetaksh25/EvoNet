@@ -20,6 +20,8 @@ __pycache__/
 # Binaries
 *.exe
 
+# Environment variables
+*.env
 
 # PyInstaller artifacts
 build/

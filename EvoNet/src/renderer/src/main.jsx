@@ -8,9 +8,7 @@ import '@chakra-ui/react'
 import './main.css'
 import { registerLicense } from '@syncfusion/ej2-base'
 
-registerLicense(
-  'Ngo9BigBOggjHTQxAR8/V1JGaF5cXGpCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWH1fd3VURWBZVEZzV0tWYEs='
-)
+registerLicense('Ngo9BigBOggjHTQxAR8/V1JHaF5cWWZCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdlWXxcdHRURWhfWEF3XkpWYEo=')
 
 const Router = import.meta.env.DEV ? BrowserRouter : HashRouter
 

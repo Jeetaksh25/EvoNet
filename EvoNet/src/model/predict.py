@@ -22,35 +22,27 @@ def relu(x):
 
 def decode_chromosome(chromosome):
     index = 0
-
     w1_size = input_layer_size * hidden_layer_size
     w1 = chromosome[index:index + w1_size].reshape(input_layer_size, hidden_layer_size)
     index += w1_size
-
     w2_size = hidden_layer_size * output_layer_size
     w2 = chromosome[index:index + w2_size].reshape(hidden_layer_size, output_layer_size)
     index += w2_size
-
     b1 = chromosome[index:index + hidden_layer_size]
     index += hidden_layer_size
-
     b2 = chromosome[index:index + output_layer_size]
-
     return w1, w2, b1, b2
 
 
 def center_by_mass(image_array):
     thresholded = image_array.copy()
     thresholded[thresholded < 30] = 0
-
     if thresholded.sum() == 0:
         return image_array
-
     cy, cx = ndimage.center_of_mass(thresholded)
     rows, cols = image_array.shape
     shift_y = int(rows / 2 - cy)
     shift_x = int(cols / 2 - cx)
-
     return ndimage.shift(image_array, [shift_y, shift_x])
 
 
@@ -82,15 +74,13 @@ def preprocess_image(base64_image):
 
 def predict_digit(input_vector, chromosome):
     w1, w2, b1, b2 = decode_chromosome(chromosome)
-
     hidden_layer = relu(np.dot(input_vector, w1) + b1)
     logits = np.dot(hidden_layer, w2) + b2
     probabilities = softmax(logits)
-
     predicted_digit = int(np.argmax(probabilities))
     confidence = float(np.max(probabilities))
-
-    return predicted_digit, confidence
+    all_confidences = [round(float(p), 6) for p in probabilities]
+    return predicted_digit, confidence, all_confidences
 
 
 def get_model_path():
@@ -101,7 +91,16 @@ def get_model_path():
 
 image_base64 = sys.argv[1]
 input_vector = preprocess_image(image_base64)
-model_weights = np.load(get_model_path())
-digit, confidence = predict_digit(input_vector, model_weights)
 
-print({"prediction": digit, "confidence": confidence})
+# Normalise pixels 0-1 for heatmap (from [-1, 1])
+pixels_01 = [round(float((v + 1) / 2), 4) for v in input_vector]
+
+model_weights = np.load(get_model_path())
+digit, confidence, all_confidences = predict_digit(input_vector, model_weights)
+
+print({
+    "prediction": digit,
+    "confidence": confidence,
+    "all_confidences": all_confidences,
+    "pixels": pixels_01
+})
