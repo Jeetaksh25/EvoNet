@@ -6,7 +6,7 @@ import Background from './components/Background'
 import { theme } from './theme/theme'
 import { Routes, Route, useNavigate } from 'react-router-dom'
 import FrontPage from './Pages/FrontPage'
-import { StatsPage } from './Pages/Statspage'
+import  StatsPage  from './Pages/Statspage'
 import { ToastContainer } from 'react-toastify'
 
 const MotionBox = motion(Box)
@@ -23,22 +23,6 @@ const App = () => {
       color={theme.color.text}
       overflow="hidden"
       position="relative"
-      initial={{
-        opacity: 0,
-        scale: 0.96,
-        filter: 'blur(12px)',
-        boxShadow: `0 0 0px ${theme.color.primary}`
-      }}
-      animate={{
-        opacity: 1,
-        scale: 1,
-        filter: 'blur(0px)',
-        boxShadow: `0 0 80px ${theme.color.glow}`
-      }}
-      transition={{
-        duration: 0.8,
-        ease: [0.16, 1, 0.3, 1]
-      }}
     >
       <Background />
 

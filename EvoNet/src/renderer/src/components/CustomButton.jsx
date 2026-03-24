@@ -8,7 +8,7 @@ const MotionText = motion(Text)
 const MotionFlex = motion(Flex)
 const MotionButton = motion(Button)
 
-const CustomButton = ({ onClick, loading, text, iconLeft, iconRight, ...props }) => {
+const CustomButton = ({ onClick, loading, text, iconLeft, iconRight, fontSize = 'sm', ...props }) => {
   return (
     <MotionButton
       onClick={onClick}
@@ -16,7 +16,7 @@ const CustomButton = ({ onClick, loading, text, iconLeft, iconRight, ...props })
       bg={theme.color.secondary}
       border={`1px solid ${theme.color.primary}`}
       color={theme.color.primary}
-      fontSize="sm"
+      fontSize={fontSize}
       letterSpacing="0.20em"
       px={6}
       borderRadius={'sm'}

@@ -11,7 +11,6 @@ const HeadingText = ({ text, fontSize = '2em', ...props }) => {
   return (
     <MotionText
       fontSize={fontSize}
-      mb={4}
       color={theme.color.primary}
       fontFamily={theme.font.primary}
       userSelect="none"

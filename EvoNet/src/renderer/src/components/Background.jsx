@@ -18,7 +18,7 @@ const Background = () => {
   }, [])
 
   return (
-    <Box position="absolute" inset={0} zIndex={0} pointerEvents={'none'} overflow={'hidden'}>
+    <Box position="fixed" inset={0} zIndex={0} pointerEvents={'none'} overflow={'hidden'}>
       <Box
         position="absolute"
         inset={0}
