@@ -6,9 +6,18 @@ import { spawn } from 'child_process'
 import path from 'path'
 import fs from 'fs'
 
+const getIconPath = (type = 'png') => {
+  if (is.dev) {
+    return path.join(process.cwd(), 'resources', `icon.${type}`)
+  }
+
+  return path.join(process.resourcesPath, `icon.${type}`)
+}
+
 function createWindow() {
   const mainWindow = new BrowserWindow({
     title: 'EvoNet',
+    icon: getIconPath('ico'),
     width: 1100,
     height: 750,
     minWidth: 900,

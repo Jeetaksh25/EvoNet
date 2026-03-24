@@ -21,6 +21,7 @@ const App = () => {
       w="100%"
       minH="100vh"
       color={theme.color.text}
+      overflow="hidden"
       position="relative"
       initial={{
         opacity: 0,

@@ -12,6 +12,16 @@ files:
 extraResources:
   - from: resources/model
     to: model
+  - from: resources
+    to: .
+    filter:
+      - "*.mp3"
+      - "*.wav"
+      - "*.mp4"
+      - "*.png"
+      - "*.jpg"
+      - "*.jpeg"
+      - "*.ico"
 
 asarUnpack:
   - model/**

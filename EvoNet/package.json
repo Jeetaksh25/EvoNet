@@ -1,9 +1,9 @@
 {
   "name": "evonet",
   "version": "1.0.0",
-  "description": "An Electron application with React",
+  "description": "Digit Recognition using Genetic Algorithm",
   "main": "./out/main/index.js",
-  "author": "example.com",
+  "author": "jeetaksh",
   "homepage": "https://electron-vite.org",
   "scripts": {
     "format": "prettier --write .",
