@@ -4,7 +4,7 @@ import { motion, useAnimation } from 'framer-motion'
 
 const MotionBox = motion(Box)
 
-const ScanAnimation = ({ imageUrl, width = 160, height = 160 }) => {
+const ScanAnimation = ({ imageUrl, width = 200, height = 200 }) => {
   const controls = useAnimation()
 
   useEffect(() => {

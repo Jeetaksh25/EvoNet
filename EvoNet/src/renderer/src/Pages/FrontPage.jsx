@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import CustomButton from '../components/CustomButton'
 import HeadingText from '../components/HeadingText'
-import ExcalidrawInput from '../components/prediction/ExcalidrawInput'
+import ExcalidrawInput from '../components/prediction/Excalidrawinput'
 import PredictionWorkingBox from '../components/prediction/PredictionWorkingBox'
 import { usePredictionStore } from '../store/usePredictionStore'
 import { handleToast } from '../functions/HandleToast'
@@ -14,8 +14,6 @@ const MotionBox = motion(Box)
 
 const FrontPage = () => {
   const [loading, setLoading] = useState(false)
-  const [showWorking, setShowWorking] = useState(false)
-  const [predictionImage, setPredictionImage] = useState(null)
   const excalidrawInputRef = useRef()
 
   const navigate = useNavigate()
@@ -31,8 +29,8 @@ const FrontPage = () => {
 
   const handlePredict = async () => {
     const latestBase64 = await excalidrawInputRef.current?.exportDrawing()
-    console.log('ref:', excalidrawInputRef.current) // ← is ref attached?
-    console.log('latestBase64:', latestBase64?.length) // ← what came back?
+    console.log('ref:', excalidrawInputRef.current)
+    console.log('latestBase64:', latestBase64?.length)
     if (loading) return
 
     if (isEmpty) {
@@ -40,25 +38,18 @@ const FrontPage = () => {
       return
     }
 
-    // Always go through the ref — it handles both cases internally
-    // const latestBase64 = await excalidrawInputRef.current?.exportDrawing()
-
     if (!latestBase64) {
       handleToast('error', 'Please draw a digit first')
       return
     }
 
     setLoading(true)
-    setShowWorking(false)
     setResult(null)
-    setPredictionImage(latestBase64)
-    await new Promise((r) => setTimeout(r, 100))
-    setShowWorking(true)
+    usePredictionStore.getState().setPredictionStep('raw')
 
     try {
       const res = await window.api.predictDigit(latestBase64)
       setResult(res)
-      handleToast('success', `Prediction complete — digit is ${res.prediction}`)
     } catch (err) {
       console.error(err)
       handleToast('error', 'Prediction failed')
@@ -85,21 +76,18 @@ const FrontPage = () => {
         />
       </Box>
 
-      <Flex direction="column" align="center" gap={6} w="100%">
+      <Flex direction="column" align="center" gap={6} w="100%" alignSelf={'center'} my={20}>
         <ExcalidrawInput ref={excalidrawInputRef} />
 
-        <Flex gap={4} align="center">
-          <CustomButton
-            text={loading ? 'Predicting...' : 'Predict'}
-            onClick={handlePredict}
-            loading={loading}
-          />
-          <CustomButton text="Stats" onClick={() => navigate('/stats')} />
-        </Flex>
+        <CustomButton
+          text={loading ? 'Predicting...' : 'Predict'}
+          onClick={handlePredict}
+          loading={loading}
+        />
       </Flex>
 
-      {showWorking && predictionImage && (
-        <PredictionWorkingBox rawImageBase64={predictionImage} result={result} />
+      {drawnImageBase64 && (
+        <PredictionWorkingBox rawImageBase64={drawnImageBase64} result={result} />
       )}
     </Box>
   )

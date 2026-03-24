@@ -10,17 +10,17 @@ const PredictionStep = ({ label, children, isLoading = false, custom = 0 }) => {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: custom * 0.1 }}
-      bg="#0d1117"
+      bg={theme.color.secondary}
       border="1px solid #ffffff0f"
       borderRadius="xl"
       p={5}
       display="flex"
       flexDirection="column"
-      gap={4}
+      gap={10}
     >
       <Flex align="center" justify="space-between">
         <Text
-          fontSize='0.8em'
+          fontSize='1em'
           letterSpacing="0.2em"
           color={theme.color.primary}
           textTransform="uppercase"
@@ -29,7 +29,7 @@ const PredictionStep = ({ label, children, isLoading = false, custom = 0 }) => {
           {label}
         </Text>
         {isLoading && (
-          <Spinner size="xs" color={theme.color.primary} sx={{ '--spinner-track-color': '#ffffff0a' }} />
+          <Spinner size="sm" color={theme.color.primary} sx={{ '--spinner-track-color': '#ffffff0a' }} />
         )}
       </Flex>
       <Box>{children}</Box>
