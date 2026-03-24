@@ -5,6 +5,15 @@ export const usePredictionStore = create((set, get) => ({
   excalidrawThumbnail: null,
   drawnImageBase64: null,
 
+  predictionImage: null,
+  showWorking: false,
+
+  predictionImage: null,
+  showWorking: false,
+
+  setPredictionImage: (img) => set({ predictionImage: img }),
+  setShowWorking: (val) => set({ showWorking: val }),
+
   setExcalidrawData: (data) => set({ excalidrawData: data }),
   setExcalidrawThumbnail: (thumbnail) => set({ excalidrawThumbnail: thumbnail }),
   setDrawnImageBase64: (img) => set({ drawnImageBase64: img }),

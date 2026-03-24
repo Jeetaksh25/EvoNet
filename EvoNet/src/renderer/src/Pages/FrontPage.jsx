@@ -14,8 +14,10 @@ const MotionBox = motion(Box)
 
 const FrontPage = () => {
   const [loading, setLoading] = useState(false)
-  const [showWorking, setShowWorking] = useState(false)
-  const [predictionImage, setPredictionImage] = useState(null)
+  const showWorking = usePredictionStore((s) => s.showWorking)
+  const predictionImage = usePredictionStore((s) => s.predictionImage)
+  const setShowWorking = usePredictionStore((s) => s.setShowWorking)
+  const setPredictionImage = usePredictionStore((s) => s.setPredictionImage)
   const excalidrawInputRef = useRef()
 
   const navigate = useNavigate()
@@ -85,13 +87,13 @@ const FrontPage = () => {
         <ExcalidrawInput ref={excalidrawInputRef} />
 
         <CustomButton
-          text={loading ? 'Predicting...' : 'Predict'}
+          text={loading ? 'Predicting' : 'Predict'}
           onClick={handlePredict}
           loading={loading}
         />
       </Flex>
 
-      {showWorking && predictionImage && (
+      {showWorking && predictionImage && result && (
         <PredictionWorkingBox rawImageBase64={predictionImage} result={result} />
       )}
     </Box>

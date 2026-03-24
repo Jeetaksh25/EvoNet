@@ -37,6 +37,10 @@ const StatsPage = () => {
     }
   }, [])
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [])
+
   return (
     <Box w="100%" minH="100vh" display="flex" justifyContent="center" alignItems="flex-start">
       <Box w="90%" mx="auto" position="relative" zIndex={1} p={10} bg="rgba(0,0,0,0.5)" my={8} borderRadius="2xl">
