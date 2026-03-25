@@ -35,9 +35,9 @@ const PixelHeatmap = () => {
   }
 
   return (
-    <Box h="200px">
+    <Box h="370px">
       <HeatMapComponent
-        height="200px"
+        height="290px"
         xAxis={{
           labels: axisLabels16,
           labelStyle: { color: 'transparent' },

@@ -31,7 +31,11 @@ const ConfidenceBar = ({ digit, value, isTop }) => (
         initial={{ width: 0 }}
         animate={{ width: `${(value * 100).toFixed(1)}%` }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
-        bg={isTop ? 'linear-gradient(90deg, #00ffe0, #0080ff)' : '#ffffff22'}
+        bg={
+          isTop
+            ? `linear-gradient(90deg, ${theme.color.primary}, ${theme.color.tertiary})`
+            : `linear-gradient(90deg, ${theme.color.secondary}, ${theme.color.tertiary})`
+        }
       />
     </Box>
     <Text
@@ -81,11 +85,11 @@ const PredictionWorkingBox = ({ rawImageBase64, result }) => {
 
   useEffect(() => {
     if (result) return
-  
+
     const t1 = setTimeout(() => setStep(STEPS.PROCESSING), 1200)
     const t2 = setTimeout(() => setStep(STEPS.SCANNING), 3000)
     const t3 = setTimeout(() => setStep(STEPS.RESULT), 9500)
-  
+
     return () => {
       clearTimeout(t1)
       clearTimeout(t2)
@@ -101,7 +105,6 @@ const PredictionWorkingBox = ({ rawImageBase64, result }) => {
     filter: 'invert(1) contrast(1.6) brightness(1.2)',
     imageRendering: 'pixelated'
   }
-
 
   return (
     <MotionBox

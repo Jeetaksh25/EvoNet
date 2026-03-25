@@ -116,10 +116,10 @@ const StatsPage = () => {
         </Grid>
 
         <Grid templateColumns="1fr 1fr" gap={6} mb={6}>
-          <StatCard label="Confidence per Digit" custom={4} h="280px">
+          <StatCard label="Confidence per Digit" custom={4} h="370px">
             <ConfidenceChart />
           </StatCard>
-          <StatCard label="Processed Input: 16×16 Heatmap" custom={5} h="280px">
+          <StatCard label="Processed Input: 16×16 Heatmap" custom={5} h="370px">
             <PixelHeatmap />
           </StatCard>
         </Grid>

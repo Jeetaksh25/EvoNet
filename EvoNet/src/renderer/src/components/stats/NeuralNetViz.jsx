@@ -23,7 +23,7 @@ const NeuralNetViz = () => {
     const scene = new THREE.Scene()
 
     const camera = new THREE.PerspectiveCamera(50, W / H, 0.1, 200)
-    camera.position.set(10, 6, 18)
+    camera.position.set(10, 6, 10)
 
     const controls = new OrbitControls(camera, renderer.domElement)
     controls.enableDamping = true
