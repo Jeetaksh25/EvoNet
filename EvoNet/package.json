@@ -1,6 +1,6 @@
 {
   "name": "evonet",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Digit Recognition using Genetic Algorithm",
   "main": "out/main/index.js",
   "author": "jeetaksh",
