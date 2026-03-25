@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { Box, Text, Flex } from '@chakra-ui/react'
+import { Box, Text, Flex, Image } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import CustomButton from '../components/CustomButton'
@@ -9,6 +9,7 @@ import PredictionWorkingBox from '../components/prediction/PredictionWorkingBox'
 import { usePredictionStore } from '../store/usePredictionStore'
 import { handleToast } from '../functions/HandleToast'
 import { theme } from '../theme/theme'
+import icon from '../assets/icon.png'
 
 const MotionBox = motion(Box)
 
@@ -75,15 +76,33 @@ const FrontPage = () => {
       alignItems="center"
       pb={16}
     >
-      <Box textAlign="center" pt={10} mb={8}>
-        <HeadingText text="EvoNet" fontSize="2.5em" />
+      <Box
+        textAlign="center"
+        pt={10}
+        gap={4}
+        w="100%"
+        flexDir={'column'}
+        display="flex"
+        alignItems="center"
+      >
+        <Flex justify="center" align="center" flexDir={'row'} gap={4} mb={8}>
+          <Image
+            src={icon}
+            alt="icon"
+            boxSize="50px"
+            _hover={{ cursor: 'pointer', boxSize: '60px' }}
+            transition={'all 0.25s ease'}
+          />
+          <HeadingText text="EvoNet" fontSize="2.5em" />
+        </Flex>
+
         <HeadingText
           text="A neural network optimized with genetic evolutionary algorithms for accurate handwritten digit recognition."
-          fontSize="0.8em"
+          fontSize="1em"
         />
       </Box>
 
-      <Flex direction="column" align="center" gap={6} w="100%" alignSelf={'center'} my={20}>
+      <Flex direction="column" align="center" gap={10} w="100%" alignSelf={'center'} my={20}>
         <ExcalidrawInput ref={excalidrawInputRef} />
 
         <CustomButton

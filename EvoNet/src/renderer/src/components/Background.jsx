@@ -53,7 +53,7 @@ const Background = () => {
             ${Math.sin(pos.x * 0.02) * 10}px,
             ${Math.cos(pos.y * 0.02) * 10}px
           )`,
-          opacity: 0.75,
+          opacity: 1,
           filter: 'drop-shadow(0 0 6px #00ffe0)'
         }}
       />

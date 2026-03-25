@@ -124,7 +124,7 @@ const ExcalidrawInput = forwardRef((props, ref) => {
   return (
     <Box h={'100%'} w={'100%'} display="flex" alignItems="center" justifyContent="center">
       <MotionBox
-        whileHover={{ scale: 1.01 }}
+        whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.98 }}
         onClick={openModal}
         cursor="pointer"
@@ -235,7 +235,7 @@ const ExcalidrawInput = forwardRef((props, ref) => {
                     currentItemStrokeColor: '#ffffff',
                     currentItemBackgroundColor: 'transparent',
                     currentItemFillStyle: 'solid',
-                    currentItemStrokeWidth: 2
+                    currentItemStrokeWidth: 4
                   },
                   files: excalidrawData?.files ?? {}
                 }}
