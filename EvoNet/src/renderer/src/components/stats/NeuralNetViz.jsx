@@ -12,8 +12,8 @@ const NeuralNetViz = () => {
     const mount = mountRef.current
     if (!mount) return
 
-    const W = mount.clientWidth || 300
-    const H = mount.clientHeight || 210
+    const W = mount.clientWidth
+    const H = mount.clientHeight
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
     renderer.setSize(W, H)

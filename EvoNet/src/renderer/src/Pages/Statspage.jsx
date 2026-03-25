@@ -107,10 +107,10 @@ const StatsPage = () => {
         )}
 
         <Grid templateColumns="1.6fr 1fr" gap={6} mb={6}>
-          <StatCard label="Fitness History: 400 Generations" custom={2} h="280px">
+          <StatCard label="Fitness History: 400 Generations" custom={2} h="370px">
             <FitnessChart />
           </StatCard>
-          <StatCard label="3D Neural Network" custom={3} h="280px">
+          <StatCard label="3D Neural Network" custom={3} h="370px">
             <NeuralNetViz />
           </StatCard>
         </Grid>
@@ -144,7 +144,7 @@ const StatsPage = () => {
                 >
                   {label}
                 </Text>
-                <Text fontSize="1.2em" fontWeight="600" color={theme.color.tertiary}>
+                <Text fontSize="1em" fontWeight="600" color={theme.color.tertiary}>
                   {val}
                 </Text>
               </Box>
