@@ -99,6 +99,7 @@ const FrontPage = () => {
         <HeadingText
           text="A neural network optimized with genetic evolutionary algorithms for accurate handwritten digit recognition."
           fontSize="1em"
+          width='80%'
         />
       </Box>
 

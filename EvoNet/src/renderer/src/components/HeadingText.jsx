@@ -7,7 +7,7 @@ const MotionBox = motion(Box)
 const MotionText = motion(Text)
 const MotionFlex = motion(Flex)
 
-const HeadingText = ({ text, fontSize = '2em', ...props }) => {
+const HeadingText = ({ text, fontSize = '2em', width = 'max-content', ...props }) => {
   return (
     <MotionText
       fontSize={fontSize}
@@ -22,7 +22,7 @@ const HeadingText = ({ text, fontSize = '2em', ...props }) => {
       }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      w={'max-content'}
+      w={width}
       {...props}
     >
       {text}
