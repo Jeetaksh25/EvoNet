@@ -26,23 +26,22 @@ jobs:
         run: |
           pip install numpy pillow scipy pyinstaller
 
-      # 4️⃣ Build EXE from YOUR actual folder
-      - name: Build Python EXE
-        run: |
-          cd src/model
-          pyinstaller --onefile --add-data "ga_best_weights.npy;." `
-            --exclude-module torch `
-            --exclude-module torchvision `
-            --exclude-module pandas `
-            --exclude-module sklearn `
-            --exclude-module matplotlib `
-            predict.py
-
-      # 5️⃣ Copy EXE → resources (IMPORTANT STEP)
+          - name: Build Python EXE
+          run: |
+            cd EvoNet/src/model
+            pyinstaller --onefile --add-data "ga_best_weights.npy;." `
+              --exclude-module torch `
+              --exclude-module torchvision `
+              --exclude-module pandas `
+              --exclude-module sklearn `
+              --exclude-module matplotlib `
+              predict.py
+        
       - name: Prepare resources folder
         run: |
-          mkdir -Force resources\model
-          copy src\model\dist\predict.exe resources\model\predict.exe
+          mkdir -Force EvoNet\resources\model
+          copy EvoNet\src\model\dist\predict.exe EvoNet\resources\model\predict.exe
+          
 
       # 6️⃣ Setup Node
       - name: Setup Node.js
