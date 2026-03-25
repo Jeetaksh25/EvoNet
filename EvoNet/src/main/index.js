@@ -116,10 +116,6 @@ ipcMain.handle('predict-digit', async (_, base64Image) => {
   })
 })
 
-// ── Load fitness history ───────────────────────────────────────────────────────
-// Reads fitness_history.npy and returns the float values as a plain JS array.
-// .npy format: 128-byte header (magic + version + header_len + header dict)
-// followed by raw float32 little-endian values.
 ipcMain.handle('get-fitness-history', async () => {
   try {
     const isDev = !app.isPackaged
@@ -129,10 +125,9 @@ ipcMain.handle('get-fitness-history', async () => {
 
     const buf = fs.readFileSync(npyPath)
 
-    // Parse npy header to find where data starts
-    // Magic: \x93NUMPY (6 bytes), version (2 bytes), header_len (2 bytes LE)
-    const headerLen = buf.readUInt16LE(8)
-    const dataOffset = 10 + headerLen
+    const major = buf[6]
+    const headerLen = major >= 2 ? buf.readUInt32LE(8) : buf.readUInt16LE(8)
+    const dataOffset = (major >= 2 ? 12 : 10) + headerLen
 
     const count = (buf.length - dataOffset) / 8
     const values = []
@@ -150,14 +145,14 @@ ipcMain.handle('get-fitness-history', async () => {
 ipcMain.handle('get-model-meta', async () => {
   return {
     inputSize: 256,
-    hiddenSize: 256,
+    hiddenSize: 128,
     outputSize: 10,
-    totalParams: 256 * 256 + 256 + 256 * 10 + 10,
-    architecture: '256 → 256 → 10',
+    totalParams: 256*128 + 128*10 + 128 + 10,
+    architecture: '256 → 128 → 10',
     activation: 'ReLU',
     optimizer: 'Genetic Algorithm',
     populationSize: 300,
     generations: 400,
-    valAccuracy: 0.7281428571428571
+    valAccuracy: 0.7527
   }
 })

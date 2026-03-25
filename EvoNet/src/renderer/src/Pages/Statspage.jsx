@@ -130,8 +130,8 @@ const StatsPage = () => {
               ['Population', '300'],
               ['Generations', '400'],
               ['Mutation Rate', '5% → 1%'],
-              ['Elite Size', '10'],
-              ['Tournament', '15'],
+              ['Elite Size', '6'],
+              ['Tournament', '7'],
               ['Crossover', 'Uniform + Blend']
             ].map(([label, val]) => (
               <Box key={label} textAlign="center">
