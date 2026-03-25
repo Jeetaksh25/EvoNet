@@ -134,11 +134,12 @@ ipcMain.handle('get-fitness-history', async () => {
     const headerLen = buf.readUInt16LE(8)
     const dataOffset = 10 + headerLen
 
-    const count = (buf.length - dataOffset) / 4
+    const count = (buf.length - dataOffset) / 8
     const values = []
     for (let i = 0; i < count; i++) {
-      values.push(buf.readFloatLE(dataOffset + i * 4))
+      values.push(buf.readDoubleLE(dataOffset + i * 8))
     }
+    
     return values
   } catch (err) {
     console.error('Failed to load fitness history:', err)
@@ -149,14 +150,14 @@ ipcMain.handle('get-fitness-history', async () => {
 ipcMain.handle('get-model-meta', async () => {
   return {
     inputSize: 256,
-    hiddenSize: 128,
+    hiddenSize: 256,
     outputSize: 10,
-    totalParams: 256 * 128 + 128 + 128 * 10 + 10,
-    architecture: '256 → 128 → 10',
+    totalParams: 256 * 256 + 256 + 256 * 10 + 10,
+    architecture: '256 → 256 → 10',
     activation: 'ReLU',
     optimizer: 'Genetic Algorithm',
     populationSize: 300,
     generations: 400,
-    valAccuracy: 0.7492
+    valAccuracy: 0.7281428571428571
   }
 })

@@ -261,7 +261,7 @@ const PredictionWorkingBox = ({ rawImageBase64, result }) => {
                 title="Forward Pass"
                 points={[
                   'Input layer (256 neurons)',
-                  'Hidden layer (128, ReLU)',
+                  'Hidden layer (256 neurons, ReLU)',
                   'Output layer (10 classes)',
                   'Softmax probability distribution',
                   'Weights evolved via GA (400 generations)'

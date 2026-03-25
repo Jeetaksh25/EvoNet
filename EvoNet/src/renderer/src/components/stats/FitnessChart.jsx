@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Box, Flex, Spinner } from '@chakra-ui/react'
 import {
   ChartComponent,
@@ -15,29 +16,23 @@ import { theme } from '../../theme/theme'
 const FitnessChart = () => {
   const fitnessHistory = usePredictionStore((s) => s.fitnessHistory)
 
-  const MAX_GEN = 400
-  const FINAL_ACC = 74.92
-  const START_ACC = 11.1
-  
-  const data = Array.from({ length: MAX_GEN }, (_, i) => {
-    const t = i / (MAX_GEN - 1)
-    const progress = 1 - Math.exp(-4 * t)
-  
-    const accuracy =
-      START_ACC + (FINAL_ACC - START_ACC) * progress
-  
-    return {
-      generation: i + 1,
-      accuracy: +accuracy.toFixed(2)
-    }
-  })
+  const data = fitnessHistory.map((acc, i) => ({
+    generation: i + 1,
+    accuracy: +(acc * 100).toFixed(2)
+  }))
+
+  const loadFitnessHistory = usePredictionStore((s) => s.loadFitnessHistory)
+
+  useEffect(() => {
+    loadFitnessHistory()
+  }, [])
 
   const values = data.map((d) => d.accuracy)
   const minY = values.length ? Math.min(...values) : 0
   const maxY = values.length ? Math.max(...values) : 100
 
   const axisStyle = {
-    labelStyle: { color: '#aaa', fontFamily: 'IBM Plex Mono', size: '10px'},
+    labelStyle: { color: '#aaa', fontFamily: 'IBM Plex Mono', size: '10px' },
     lineStyle: { color: '#333' },
     majorGridLines: { color: '#222' },
     majorTickLines: { width: 0 }
@@ -59,9 +54,9 @@ const FitnessChart = () => {
         primaryXAxis={{
           ...axisStyle,
           minimum: 1,
-          maximum: 405
+          maximum: 410,
+          interval: 50,
         }}
-        
         primaryYAxis={{
           ...axisStyle,
           minimum: 0,
@@ -69,7 +64,7 @@ const FitnessChart = () => {
           interval: 10,
           labelFormat: '{value}%',
           labelPadding: 10,
-          labelStyle: { size: '8px', color: 'white'}
+          labelStyle: { size: '8px', color: 'white' }
         }}
         tooltip={{
           enable: true,

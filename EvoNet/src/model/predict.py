@@ -7,7 +7,7 @@ import base64
 import io
 
 input_layer_size = 256
-hidden_layer_size = 128
+hidden_layer_size = 256
 output_layer_size = 10
 
 
@@ -76,7 +76,8 @@ def predict_digit(input_vector, chromosome):
     w1, w2, b1, b2 = decode_chromosome(chromosome)
     hidden_layer = relu(np.dot(input_vector, w1) + b1)
     logits = np.dot(hidden_layer, w2) + b2
-    probabilities = softmax(logits)
+    logits = np.clip(logits, -8, 8)
+    probabilities = softmax(logits/0.8)
     predicted_digit = int(np.argmax(probabilities))
     confidence = float(np.max(probabilities))
     all_confidences = [round(float(p), 6) for p in probabilities]

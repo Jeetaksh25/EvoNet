@@ -26,5 +26,14 @@ export const usePredictionStore = create((set, get) => ({
   setModelMeta: (meta) => set({ modelMeta: meta }),
 
   clearDrawing: () =>
-    set({ excalidrawData: null, excalidrawThumbnail: null, drawnImageBase64: null, result: null })
+    set({ excalidrawData: null, excalidrawThumbnail: null, drawnImageBase64: null, result: null }),
+
+  loadFitnessHistory: async () => {
+    try {
+      const history = await window.electron.ipcRenderer.invoke('get-fitness-history')
+      set({ fitnessHistory: history })
+    } catch (err) {
+      console.error('Failed to load fitness history:', err)
+    }
+  },
 }))
