@@ -2,7 +2,7 @@
   "name": "evonet",
   "version": "1.0.0",
   "description": "Digit Recognition using Genetic Algorithm",
-  "main": "./out/main/index.js",
+  "main": "out/main/index.js",
   "author": "jeetaksh",
   "homepage": "https://electron-vite.org",
   "scripts": {
