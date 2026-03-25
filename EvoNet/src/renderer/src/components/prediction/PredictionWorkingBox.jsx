@@ -12,6 +12,34 @@ import CustomButton from '../CustomButton'
 
 const MotionBox = motion(Box)
 
+const InfoPanel = ({ title, points }) => (
+  <Box
+    bg="rgba(255,255,255,0.02)"
+    border="1px solid #ffffff0a"
+    borderRadius="lg"
+    p={4}
+    minW="220px"
+  >
+    <Text
+      fontSize="0.7em"
+      letterSpacing="0.12em"
+      textTransform="uppercase"
+      color={theme.color.tertiary}
+      mb={2}
+    >
+      {title}
+    </Text>
+
+    <Flex direction="column" gap={1}>
+      {points.map((p, i) => (
+        <Text key={i} fontSize="0.8em" color={theme.color.text} lineHeight={1.6}>
+          • {p}
+        </Text>
+      ))}
+    </Flex>
+  </Box>
+)
+
 const ConfidenceBar = ({ digit, value, isTop }) => (
   <Flex align="center" gap={2}>
     <Text
@@ -106,6 +134,33 @@ const PredictionWorkingBox = ({ rawImageBase64, result }) => {
     imageRendering: 'pixelated'
   }
 
+  const generate16x16 = (base64) => {
+    return new Promise((resolve) => {
+      const img = new Image()
+      img.src = base64
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = 16
+        canvas.height = 16
+
+        const ctx = canvas.getContext('2d')
+
+        ctx.drawImage(img, 0, 0, 16, 16)
+
+        resolve(canvas.toDataURL())
+      }
+    })
+  }
+
+  const [processedImage, setProcessedImage] = useState(null)
+
+  useEffect(() => {
+    if (rawImageBase64) {
+      generate16x16(rawImageBase64).then(setProcessedImage)
+    }
+  }, [rawImageBase64])
+
   return (
     <MotionBox
       initial={{ opacity: 0, y: 24 }}
@@ -145,15 +200,14 @@ const PredictionWorkingBox = ({ rawImageBase64, result }) => {
             bg="#080c10"
             style={{ imageRendering: 'pixelated' }}
           />
-          <Box>
-            <Text fontSize={'0.8em'} color={theme.color.text} lineHeight={1.8}>
-              Original drawing exported from Excalidraw canvas.
-              <br />
-              Will be converted to greyscale, centered by
-              <br />
-              center-of-mass, and resized to 16×16 pixels.
-            </Text>
-          </Box>
+          <InfoPanel
+            title="Input"
+            points={[
+              'Exported from Excalidraw canvas',
+              'High-resolution drawing',
+              'Not yet normalized'
+            ]}
+          />
         </Flex>
       </PredictionStep>
 
@@ -167,7 +221,7 @@ const PredictionWorkingBox = ({ rawImageBase64, result }) => {
             <Flex align="center" gap={10} justifyContent={'center'}>
               <Box
                 as="img"
-                src={rawImageBase64}
+                src={processedImage}
                 w="160px"
                 h="160px"
                 objectFit="contain"
@@ -176,15 +230,17 @@ const PredictionWorkingBox = ({ rawImageBase64, result }) => {
                 bg="#080c10"
                 style={processedStyle}
               />
-              <Box>
-                <Text fontSize={'0.8em'} color={theme.color.text} lineHeight={1.8}>
-                  Greyscale → center-of-mass shift → resize 20×20
-                  <br />
-                  → pad to 28×28 → downsample to 16×16.
-                  <br />
-                  Pixel values normalised to [−1, 1].
-                </Text>
-              </Box>
+              <InfoPanel
+                title="Preprocessing Pipeline"
+                points={[
+                  'Convert to grayscale',
+                  'Center using mass distribution',
+                  'Resize → 20×20',
+                  'Pad → 28×28',
+                  'Downsample → 16×16',
+                  'Normalize to [-1, 1]'
+                ]}
+              />
             </Flex>
           </PredictionStep>
         )}
@@ -200,16 +256,17 @@ const PredictionWorkingBox = ({ rawImageBase64, result }) => {
         {(step === STEPS.SCANNING || step === STEPS.RESULT) && (
           <PredictionStep label="Step 3: Neural Network Forward Pass" custom={2}>
             <Flex align="center" gap={10} justifyContent={'center'}>
-              <ScanAnimation imageUrl={rawImageBase64} width={180} height={180} />
-              <Box>
-                <Text lineHeight={1.8} fontSize={'0.8em'} color={theme.color.text}>
-                  Input (256) → ReLU → Hidden (128)
-                  <br />
-                  → Output (10) → Softmax probabilities.
-                  <br />
-                  Weights evolved over 400 GA generations.
-                </Text>
-              </Box>
+              <ScanAnimation imageUrl={processedImage} width={180} height={180} />
+              <InfoPanel
+                title="Forward Pass"
+                points={[
+                  'Input layer (256 neurons)',
+                  'Hidden layer (128, ReLU)',
+                  'Output layer (10 classes)',
+                  'Softmax probability distribution',
+                  'Weights evolved via GA (400 generations)'
+                ]}
+              />
             </Flex>
           </PredictionStep>
         )}

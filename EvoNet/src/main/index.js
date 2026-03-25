@@ -83,7 +83,10 @@ ipcMain.handle('predict-digit', async (_, base64Image) => {
         ? path.join(__dirname, '../../resources/model/predict.exe')
         : path.join(process.resourcesPath, 'model', 'predict.exe')
 
-      const py = spawn(exePath, [base64Image])
+      const py = spawn(exePath)
+
+      py.stdin.write(base64Image)
+      py.stdin.end()
 
       let data = ''
       let error = ''

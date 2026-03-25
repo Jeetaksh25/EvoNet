@@ -89,7 +89,7 @@ def get_model_path():
     return os.path.join(os.path.dirname(__file__), "ga_best_weights.npy")
 
 
-image_base64 = sys.argv[1]
+image_base64 = sys.stdin.read()
 input_vector = preprocess_image(image_base64)
 
 # Normalise pixels 0-1 for heatmap (from [-1, 1])
