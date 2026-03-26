@@ -5,6 +5,7 @@ from PIL import Image
 from scipy import ndimage
 import base64
 import io
+import matplotlib.pyplot as plt
 
 input_layer_size = 256
 hidden_layer_size = 128
@@ -12,13 +13,21 @@ output_layer_size = 10
 
 
 def softmax(x):
+    x = np.clip(x, -10, 10)
     exp_values = np.exp(x - np.max(x))
     return exp_values / np.sum(exp_values)
-
 
 def relu(x):
     return np.maximum(0, x)
 
+def debug_show(image_vector):
+    img = image_vector.reshape(16, 16)
+    img = (img + 1) / 2
+
+    plt.imshow(img, cmap='gray')
+    plt.title("Predict Pipeline Output")
+    plt.axis('off')
+    plt.show()
 
 def decode_chromosome(chromosome):
     index = 0
@@ -55,18 +64,32 @@ def preprocess_image(base64_image):
     if np.mean(image_array) > 127:
         image_array = 255 - image_array
 
-    image_array = center_by_mass(image_array)
+    coords = np.argwhere(image_array > 30)
+    if len(coords) > 0:
+        y0, x0 = coords.min(axis=0)
+        y1, x1 = coords.max(axis=0)
+        image_array = image_array[y0:y1+1, x0:x1+1]
+
+    h, w = image_array.shape
+    scale = 18.0 / max(h, w)
+    new_h = max(1, int(round(h * scale)))
+    new_w = max(1, int(round(w * scale)))
 
     img = Image.fromarray(image_array.astype(np.uint8))
-    img = img.resize((20, 20), Image.Resampling.LANCZOS)
+    img = img.resize((new_w, new_h), Image.Resampling.LANCZOS)
 
-    padded = np.zeros((28, 28), dtype=np.float32)
-    padded[4:24, 4:24] = np.array(img).astype(np.float32)
+    canvas_20 = np.zeros((20, 20), dtype=np.float32)
+    y_off = (20 - new_h) // 2
+    x_off = (20 - new_w) // 2
+    canvas_20[y_off:y_off+new_h, x_off:x_off+new_w] = np.array(img).astype(np.float32)
 
-    img = Image.fromarray(padded.astype(np.uint8))
-    img = img.resize((16, 16), Image.Resampling.LANCZOS)
+    canvas_28 = np.zeros((28, 28), dtype=np.float32)
+    canvas_28[4:24, 4:24] = canvas_20
 
-    image_array = np.array(img).astype(np.float32)
+    img_28 = Image.fromarray(canvas_28.astype(np.uint8))
+    img_16 = img_28.resize((16, 16), Image.Resampling.LANCZOS)
+
+    image_array = np.array(img_16).astype(np.float32)
     image_array = (image_array / 255.0 - 0.5) * 2
 
     return image_array.flatten()
@@ -76,6 +99,7 @@ def predict_digit(input_vector, chromosome):
     w1, w2, b1, b2 = decode_chromosome(chromosome)
     hidden_layer = relu(np.dot(input_vector, w1) + b1)
     logits = np.dot(hidden_layer, w2) + b2
+    logits = np.clip(logits, -10, 10)
     probabilities = softmax(logits)
     predicted_digit = int(np.argmax(probabilities))
     confidence = float(np.max(probabilities))
@@ -91,6 +115,8 @@ def get_model_path():
 
 image_base64 = sys.stdin.read()
 input_vector = preprocess_image(image_base64)
+
+# debug_show(input_vector)
 
 # Normalise pixels 0-1 for heatmap (from [-1, 1])
 pixels_01 = [round(float((v + 1) / 2), 4) for v in input_vector]
