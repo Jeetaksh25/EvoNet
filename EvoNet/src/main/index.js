@@ -107,7 +107,7 @@ ipcMain.handle('predict-digit', async (_, base64Image) => {
           const result = JSON.parse(data.replace(/'/g, '"'))
           resolve(result)
         } catch (e) {
-          reject('Invalid Python output: ' + data)
+          reject('Invalid Python output: ' + data + '\n' + e)
         }
       })
     } catch (err) {
@@ -134,7 +134,7 @@ ipcMain.handle('get-fitness-history', async () => {
     for (let i = 0; i < count; i++) {
       values.push(buf.readDoubleLE(dataOffset + i * 8))
     }
-    
+
     return values
   } catch (err) {
     console.error('Failed to load fitness history:', err)
@@ -144,15 +144,20 @@ ipcMain.handle('get-fitness-history', async () => {
 
 ipcMain.handle('get-model-meta', async () => {
   return {
-    inputSize: 256,
+    inputSize: 64,
     hiddenSize: 128,
     outputSize: 10,
-    totalParams: 256*128 + 128*10 + 128 + 10,
-    architecture: '256 → 128 → 10',
+    totalParams: 64 * 128 + 128 * 10 + 128 + 10,
+    pcaComponents: 64,
+    architecture: '256px → PCA(64) → 128 → 10',
     activation: 'ReLU',
     optimizer: 'Genetic Algorithm',
     populationSize: 300,
     generations: 400,
-    valAccuracy: 0.7527
+    eliteSize: 6,
+    tournamentSize: 7,
+    mutationRate: 0.05,
+    minMutationRate: 0.01,
+    valAccuracy: 0.9405
   }
 })

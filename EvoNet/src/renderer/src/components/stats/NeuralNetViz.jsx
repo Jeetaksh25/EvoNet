@@ -6,7 +6,8 @@ import { usePredictionStore } from '../../store/usePredictionStore'
 
 const NeuralNetViz = () => {
   const mountRef = useRef(null)
-  const result = usePredictionStore((s) => s.result)
+  const result    = usePredictionStore((s) => s.result)
+  const modelMeta = usePredictionStore((s) => s.modelMeta)
 
   useEffect(() => {
     const mount = mountRef.current
@@ -30,10 +31,17 @@ const NeuralNetViz = () => {
     controls.dampingFactor = 0.05
     controls.enablePan = false
 
+    const inputReal  = modelMeta?.inputSize  ?? 64
+    const hiddenReal = modelMeta?.hiddenSize ?? 128
+    const outputReal = modelMeta?.outputSize ?? 10
+
+    // Display counts are visual only; scale input proportionally to real size
+    const inputDisplay = Math.max(10, Math.round(inputReal / 4))
+
     const layers = [
-      { real: 256, display: 40, x: -6, color: 0x00ffe0 },
-      { real: 128, display: 30, x: 0, color: 0x0080ff },
-      { real: 10, display: 10, x: 6, color: 0xff6b6b }
+      { real: inputReal,  display: inputDisplay, x: -6, color: 0x00ffe0 },
+      { real: hiddenReal, display: 30,            x: 0,  color: 0x0080ff },
+      { real: outputReal, display: outputReal,    x: 6,  color: 0xff6b6b }
     ]
 
     const nodesByLayer = []
@@ -148,7 +156,7 @@ const NeuralNetViz = () => {
         mount.removeChild(renderer.domElement)
       }
     }
-  }, [result])
+  }, [result, modelMeta])
 
   return <Box ref={mountRef} w="100%" h="100%" />
 }

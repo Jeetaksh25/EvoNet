@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Box, Text, Flex, Grid, GridItem } from '@chakra-ui/react'
+import { Box, Text, Flex, Grid, GridItem, Spinner } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { IoIosArrowRoundBack } from 'react-icons/io'
@@ -42,6 +42,14 @@ const StatsPage = () => {
     window.scrollTo({ top: 0, behavior: 'instant' })
   }, [])
 
+  if (!modelMeta) {
+    return (
+      <Box h="100vh" display="flex" alignItems="center" justifyContent="center">
+        <Spinner size="lg" />
+      </Box>
+    )
+  }
+
   return (
     <Box w="100%" minH="100vh" display="flex" justifyContent="center" alignItems="flex-start">
       <Box
@@ -79,7 +87,7 @@ const StatsPage = () => {
               { label: 'Architecture', val: modelMeta.architecture },
               { label: 'Total Params', val: modelMeta.totalParams.toLocaleString() },
               { label: 'Activation', val: modelMeta.activation },
-              { label: 'Val Accuracy', val: `${(modelMeta.valAccuracy * 100).toFixed(2)}%` }
+              { label: 'Val Accuracy', val: modelMeta.valAccuracy != null ? `${(modelMeta.valAccuracy * 100).toFixed(2)}%` : 'N/A' }
             ].map(({ label, val }) => (
               <GridItem key={label}>
                 <Box
@@ -107,7 +115,7 @@ const StatsPage = () => {
         )}
 
         <Grid templateColumns="1.6fr 1fr" gap={6} mb={6}>
-          <StatCard label="Fitness History: 400 Generations" custom={2} h="370px">
+          <StatCard label={`Fitness History: ${modelMeta.generations} Generations`} custom={2} h="370px">
             <FitnessChart />
           </StatCard>
           <StatCard label="3D Neural Network" custom={3} h="370px">
@@ -123,34 +131,35 @@ const StatsPage = () => {
             <PixelHeatmap />
           </StatCard>
         </Grid>
-
-        <StatCard label="Genetic Algorithm Parameters" custom={6}>
-          <Grid templateColumns="repeat(6, 1fr)" gap={4}>
-            {[
-              ['Population', '300'],
-              ['Generations', '400'],
-              ['Mutation Rate', '5% → 1%'],
-              ['Elite Size', '6'],
-              ['Tournament', '7'],
-              ['Crossover', 'Uniform + Blend']
-            ].map(([label, val]) => (
-              <Box key={label} textAlign="center">
-                <Text
-                  fontSize="0.8em"
-                  letterSpacing="0.15em"
-                  color={theme.color.primary}
-                  textTransform="uppercase"
-                  mb={1}
-                >
-                  {label}
-                </Text>
-                <Text fontSize="1em" fontWeight="600" color={theme.color.tertiary}>
-                  {val}
-                </Text>
-              </Box>
-            ))}
-          </Grid>
-        </StatCard>
+        {modelMeta && (
+          <StatCard label="Genetic Algorithm Parameters" custom={6}>
+            <Grid templateColumns="repeat(6, 1fr)" gap={4}>
+              {[
+                ['Population', modelMeta.populationSize.toLocaleString()],
+                ['Generations', modelMeta.generations.toLocaleString()],
+                ['Mutation Rate', `${(modelMeta.mutationRate * 100).toFixed(0)}% → ${(modelMeta.minMutationRate * 100).toFixed(0)}%`],
+                ['Elite Size', modelMeta.eliteSize.toLocaleString()],
+                ['Tournament', modelMeta.tournamentSize.toLocaleString()],
+                ['Crossover', 'Uniform + Blend']
+              ].map(([label, val]) => (
+                <Box key={label} textAlign="center">
+                  <Text
+                    fontSize="0.8em"
+                    letterSpacing="0.15em"
+                    color={theme.color.primary}
+                    textTransform="uppercase"
+                    mb={1}
+                  >
+                    {label}
+                  </Text>
+                  <Text fontSize="1em" fontWeight="600" color={theme.color.tertiary}>
+                    {val}
+                  </Text>
+                </Box>
+              ))}
+            </Grid>
+          </StatCard>
+        )}
       </Box>
     </Box>
   )

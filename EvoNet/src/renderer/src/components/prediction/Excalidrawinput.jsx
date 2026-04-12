@@ -235,7 +235,7 @@ const ExcalidrawInput = forwardRef((props, ref) => {
                     currentItemStrokeColor: '#ffffff',
                     currentItemBackgroundColor: 'transparent',
                     currentItemFillStyle: 'solid',
-                    currentItemStrokeWidth: 6
+                    currentItemStrokeWidth: 4
                   },
                   files: excalidrawData?.files ?? {}
                 }}

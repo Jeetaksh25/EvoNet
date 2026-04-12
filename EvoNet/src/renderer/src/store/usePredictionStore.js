@@ -36,4 +36,13 @@ export const usePredictionStore = create((set, get) => ({
       console.error('Failed to load fitness history:', err)
     }
   },
+
+  loadModelMeta: async () => {
+    try {
+      const meta = await window.api.getModelMeta()
+      set({ modelMeta: meta })
+    } catch (err) {
+      console.error('Failed to load model meta:', err)
+    }
+  },
 }))

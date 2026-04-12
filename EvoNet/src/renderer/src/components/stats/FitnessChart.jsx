@@ -28,8 +28,9 @@ const FitnessChart = () => {
   }, [])
 
   const values = data.map((d) => d.accuracy)
-  const minY = values.length ? Math.min(...values) : 0
-  const maxY = values.length ? Math.max(...values) : 100
+  const minY   = values.length ? Math.min(...values) : 0
+  const maxY   = values.length ? Math.max(...values) : 100
+  const maxGen = data.length > 0 ? data.length + 10 : 410
 
   const axisStyle = {
     labelStyle: { color: '#aaa', fontFamily: 'IBM Plex Mono', size: '10px' },
@@ -54,8 +55,8 @@ const FitnessChart = () => {
         primaryXAxis={{
           ...axisStyle,
           minimum: 1,
-          maximum: 410,
-          interval: 50,
+          maximum: maxGen,
+          interval: Math.ceil(maxGen / 8),
         }}
         primaryYAxis={{
           ...axisStyle,

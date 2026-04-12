@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Box, Text, Button, Flex, Grid, GridItem, Spinner, Image, Input } from '@chakra-ui/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import '@excalidraw/excalidraw/index.css'
@@ -8,12 +8,19 @@ import { Routes, Route, useNavigate } from 'react-router-dom'
 import FrontPage from './Pages/FrontPage'
 import  StatsPage  from './Pages/Statspage'
 import { ToastContainer } from 'react-toastify'
+import { usePredictionStore } from './store/usePredictionStore'
 
 const MotionBox = motion(Box)
 
 const App = () => {
   const [result, setResult] = useState(null)
   const navigate = useNavigate()
+  const loadModelMeta = usePredictionStore((s) => s.loadModelMeta)
+
+  // Load model metadata once on startup so every component has it immediately
+  useEffect(() => {
+    loadModelMeta()
+  }, [])
 
   return (
     <MotionBox

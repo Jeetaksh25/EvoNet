@@ -104,6 +104,7 @@ const STEPS = {
 const PredictionWorkingBox = ({ rawImageBase64, result }) => {
   const [step, setStep] = useState(() => (result ? STEPS.RESULT : STEPS.RAW))
   const bottomRef = useRef(null)
+  const modelMeta = usePredictionStore((s) => s.modelMeta)
 
   const navigate = useNavigate()
 
@@ -134,32 +135,28 @@ const PredictionWorkingBox = ({ rawImageBase64, result }) => {
     imageRendering: 'pixelated'
   }
 
-  const generate16x16 = (base64) => {
-    return new Promise((resolve) => {
-      const img = new Image()
-      img.src = base64
-
-      img.onload = () => {
-        const canvas = document.createElement('canvas')
-        canvas.width = 16
-        canvas.height = 16
-
-        const ctx = canvas.getContext('2d')
-
-        ctx.drawImage(img, 0, 0, 16, 16)
-
-        resolve(canvas.toDataURL())
-      }
-    })
-  }
-
   const [processedImage, setProcessedImage] = useState(null)
 
   useEffect(() => {
-    if (rawImageBase64) {
-      generate16x16(rawImageBase64).then(setProcessedImage)
+    if (result?.pixels) {
+      const canvas = document.createElement('canvas')
+      canvas.width = 16
+      canvas.height = 16
+      const ctx = canvas.getContext('2d')
+      const imageData = ctx.createImageData(16, 16)
+
+      result.pixels.forEach((v, i) => {
+        const brightness = Math.round(v * 255)
+        imageData.data[i * 4] = brightness
+        imageData.data[i * 4 + 1] = brightness
+        imageData.data[i * 4 + 2] = brightness
+        imageData.data[i * 4 + 3] = 255
+      })
+
+      ctx.putImageData(imageData, 0, 0)
+      setProcessedImage(canvas.toDataURL())
     }
-  }, [rawImageBase64])
+  }, [result])
 
   return (
     <MotionBox
@@ -228,17 +225,19 @@ const PredictionWorkingBox = ({ rawImageBase64, result }) => {
                 border="1px solid #ffffff0f"
                 borderRadius="md"
                 bg="#080c10"
-                style={processedStyle}
+                style={{ imageRendering: 'pixelated' }}
               />
               <InfoPanel
                 title="Preprocessing Pipeline"
                 points={[
-                  'Convert to grayscale',
-                  'Center using mass distribution',
-                  'Resize → 20×20',
-                  'Pad → 28×28',
-                  'Downsample → 16×16',
-                  'Normalize to [-1, 1]'
+                  'Convert to greyscale',
+                  'Invert if bright background',
+                  'Crop to digit bounding box',
+                  'Scale + center in 20×20',
+                  'Center-of-mass alignment',
+                  'Resize → 16×16',
+                  'Normalize to [-1, 1]',
+                  `PCA projection: 256 → ${modelMeta?.pcaComponents ?? '…'} features`
                 ]}
               />
             </Flex>
@@ -248,7 +247,7 @@ const PredictionWorkingBox = ({ rawImageBase64, result }) => {
 
       <AnimatePresence>
         {step === STEPS.PROCESSING && (
-          <StatusRow text="Feeding 256-dimensional vector into neural network..." />
+          <StatusRow text={`Feeding ${modelMeta?.pcaComponents ?? 256}-dimensional PCA vector into neural network…`} />
         )}
       </AnimatePresence>
 
@@ -260,11 +259,11 @@ const PredictionWorkingBox = ({ rawImageBase64, result }) => {
               <InfoPanel
                 title="Forward Pass"
                 points={[
-                  'Input layer (256 neurons)',
-                  'Hidden layer (256 neurons, ReLU)',
-                  'Output layer (10 classes)',
-                  'Softmax probability distribution',
-                  'Weights evolved via GA (400 generations)'
+                  `Input layer (${modelMeta?.pcaComponents ?? '…'} PCA features)`,
+                  `Hidden layer (${modelMeta?.hiddenSize ?? '…'} neurons, ReLU)`,
+                  `Output layer (${modelMeta?.outputSize ?? 10} classes)`,
+                  'Softmax with temperature scaling',
+                  `Weights evolved via GA (${modelMeta?.generations ?? '…'} generations)`
                 ]}
               />
             </Flex>
