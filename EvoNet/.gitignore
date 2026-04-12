@@ -25,5 +25,5 @@ __pycache__/
 
 # PyInstaller artifacts
 build/
-*.spec
+# predict.spec is intentionally tracked — it is the canonical local build config
 debug_preprocessed.png

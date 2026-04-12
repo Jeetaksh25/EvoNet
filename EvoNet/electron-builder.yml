@@ -27,7 +27,7 @@ asarUnpack:
   - model/**
 
 win:
-  executableName: evonet
+  executableName: EvoNet
   target:
     - nsis
 
@@ -35,8 +35,8 @@ nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: always
-  shortcutName: evonet
-  uninstallDisplayName: evonet
+  shortcutName: EvoNet
+  uninstallDisplayName: EvoNet
   artifactName: ${productName}-${version}-setup.${ext}
 
 mac:
@@ -53,7 +53,7 @@ linux:
     - AppImage
     - snap
     - deb
-  maintainer: evonet
+  maintainer: EvoNet
   category: Utility
 
 appImage:
