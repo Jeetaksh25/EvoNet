@@ -47,12 +47,6 @@ def preprocess_image(base64_image):
     if np.mean(img) > 127:
         img = 255 - img
 
-    # Normalize near-black background to exactly 0.
-    # Excalidraw uses a dark background (#0d1117, grayscale ≈17) which is NOT
-    # pure black. Inside enclosed digit areas (loops of 0, 6, 8, 9) those ~17
-    # background pixels survive the bounding-box crop and create a systematic
-    # +0.13 offset in the PCA projection versus MNIST's true-black background.
-    # Zeroing anything below 30 removes that offset without affecting strokes.
     img[img < 30] = 0
 
     coords = np.argwhere(img > 30)
@@ -86,9 +80,6 @@ def preprocess_image(base64_image):
 
     result = np.array(pil, dtype=np.float32)
 
-    # Excalidraw exports pure-white (255) strokes; MNIST strokes peak at ~180
-    # due to ink spreading and scanning. Apply a mild Gaussian blur to simulate
-    # that softness and bring stroke intensities into the MNIST training range.
     result = ndimage.gaussian_filter(result, sigma=0.8)
 
     result = (result / 255.0 - 0.5) * 2.0
