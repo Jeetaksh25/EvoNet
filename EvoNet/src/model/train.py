@@ -11,25 +11,10 @@ import torch
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
 
-# ── Feature extraction ────────────────────────────────────────────────────────
-# Reduce 256 raw pixel features → PCA_COMPONENTS via PCA.
-# This shrinks the chromosome from 34 058 → 9 610 genes, making GA feasible.
 PCA_COMPONENTS = 64
 
 
-# ── Image preprocessing ───────────────────────────────────────────────────────
 def preprocess_image_array(img_flat):
-    """
-    Preprocess a flat 784-pixel MNIST image into a normalised 256-element vector.
-
-    Pipeline (matches predict.py exactly):
-      1. Reshape to 28×28; ensure white digit on black background
-      2. Crop to digit bounding box
-      3. Scale to fit inside 18×18, center in 20×20
-      4. Shift by center-of-mass (replicates standard MNIST preprocessing)
-      5. Embed in 28×28 with 4-px padding, downsample to 16×16
-      6. Normalise to [-1, 1]
-    """
     img = img_flat.reshape(28, 28).astype(np.float32)
 
     if np.mean(img) > 127:
@@ -54,7 +39,6 @@ def preprocess_image_array(img_flat):
     x_off = (20 - new_w) // 2
     canvas[y_off:y_off + new_h, x_off:x_off + new_w] = np.array(pil, dtype=np.float32)
 
-    # Center-of-mass shift (standard MNIST preprocessing step)
     if canvas.sum() > 0:
         cy, cx = ndimage.center_of_mass(canvas)
         shift_y = int(round(10 - cy))
@@ -72,7 +56,6 @@ def preprocess_image_array(img_flat):
     return result.flatten()   # 256-dim
 
 
-# ── Load & preprocess MNIST ───────────────────────────────────────────────────
 print("Loading MNIST...")
 mnist = fetch_openml('mnist_784', version=1, as_frame=False)
 raw_features  = mnist.data.astype(np.float32)
@@ -89,7 +72,6 @@ x_train_px, x_val_px, y_train, y_val = train_test_split(
 )
 
 
-# ── PCA feature selection: 256 → PCA_COMPONENTS ───────────────────────────────
 print(f"Fitting PCA ({PCA_COMPONENTS} components)...")
 pca = PCA(n_components=PCA_COMPONENTS, random_state=42)
 pca.fit(x_train_px)
@@ -100,15 +82,13 @@ print(f"  Explained variance: {explained:.3f}")
 x_train = pca.transform(x_train_px).astype(np.float32)
 x_val   = pca.transform(x_val_px).astype(np.float32)
 
-# Persist PCA params so predict.py can replicate the same transform
 current_dir = os.path.dirname(__file__)
 np.save(os.path.join(current_dir, "pca_mean.npy"),       pca.mean_.astype(np.float32))
 np.save(os.path.join(current_dir, "pca_components.npy"), pca.components_.astype(np.float32))
 print("Saved PCA parameters.")
 
 
-# ── Network: PCA_COMPONENTS → hidden_layer_size → 10 ─────────────────────────
-input_layer_size  = PCA_COMPONENTS   # 64
+input_layer_size  = PCA_COMPONENTS
 hidden_layer_size = 128
 output_layer_size = 10
 
@@ -121,7 +101,6 @@ chromosome_length = (
 print(f"Chromosome length: {chromosome_length}  (was 34 058 with 256 raw pixels)")
 
 
-# ── GA hyperparameters ────────────────────────────────────────────────────────
 population_size      = 300
 number_of_generation = 400
 mutation_rate        = 0.05
@@ -129,7 +108,6 @@ elite_size           = 6
 tournament_size      = 7
 
 
-# ── GA utilities ──────────────────────────────────────────────────────────────
 def initialize_population():
     w1_std = np.sqrt(2.0 / input_layer_size)
     w2_std = np.sqrt(2.0 / hidden_layer_size)
@@ -142,7 +120,6 @@ def initialize_population():
 
 
 def augment(x):
-    """Small Gaussian noise in PCA feature space (avoids overfitting)."""
     return x + np.random.normal(0, 0.05, x.shape).astype(np.float32)
 
 
@@ -151,11 +128,9 @@ EVAL_BATCH_SIZE = 5000
 def evaluate_population(population):
     pop_size = population.shape[0]
 
-    # Random training mini-batch (augmented to reduce overfitting)
     tr_idx = np.random.choice(len(x_train), EVAL_BATCH_SIZE, replace=False)
     bx     = augment(x_train[tr_idx])
 
-    # Random validation mini-batch (larger for stable balanced-accuracy estimate)
     va_idx = np.random.choice(len(x_val), min(3000, len(x_val)), replace=False)
     vx     = x_val[va_idx]
     vy     = y_val[va_idx]
@@ -171,23 +146,18 @@ def evaluate_population(population):
     B1 = population[:, s1+s2          : s1+s2+hidden_layer_size]
     B2 = population[:, s1+s2+hidden_layer_size:]
 
-    # Forward pass — training batch
     h_tr  = torch.relu(torch.einsum('ni,pih->pnh', bx_t, W1) + B1.unsqueeze(1))
     lg_tr = torch.einsum('pnh,pho->pno', h_tr, W2) + B2.unsqueeze(1)
-    pr_tr = torch.argmax(lg_tr, dim=2).cpu().numpy()   # (pop, EVAL_BATCH_SIZE)
+    pr_tr = torch.argmax(lg_tr, dim=2).cpu().numpy()
 
-    # Forward pass — validation batch
     h_va  = torch.relu(torch.einsum('ni,pih->pnh', vx_t, W1) + B1.unsqueeze(1))
     lg_va = torch.einsum('pnh,pho->pno', h_va, W2) + B2.unsqueeze(1)
-    pr_va = torch.argmax(lg_va, dim=2).cpu().numpy()   # (pop, va_size)
+    pr_va = torch.argmax(lg_va, dim=2).cpu().numpy()
 
-    # Overall validation accuracy (vectorised)
-    overall_acc = (pr_va == vy[None, :]).mean(axis=1)   # (pop,)
+    overall_acc = (pr_va == vy[None, :]).mean(axis=1)
 
     fitness_scores = np.empty(pop_size, dtype=np.float32)
     for i in range(pop_size):
-        # Balanced accuracy: mean per-class recall on validation
-        # This forces the GA to learn ALL 10 digits, not just the easy ones.
         recalls = []
         for c in range(10):
             mask = vy == c
@@ -195,14 +165,11 @@ def evaluate_population(population):
                 recalls.append(float((pr_va[i][mask] == c).mean()))
         bal_acc = float(np.mean(recalls)) if recalls else 0.0
 
-        # Distribution penalty: penalise individuals that predict fewer than 10 classes
         n_classes = len(np.unique(pr_tr[i]))
         dist_pen  = max(0, 10 - n_classes) * 0.02
 
-        # L2 regularisation: discourage large weights
         l2_pen = 1e-5 * float(torch.mean(population[i] ** 2).item())
 
-        # Fitness: balanced accuracy weighted more than raw accuracy
         fitness_scores[i] = (
             0.6 * bal_acc +
             0.4 * float(overall_acc[i]) -
@@ -225,7 +192,6 @@ def crossover(p1, p2):
 
 
 def mutate(chromosome, generation):
-    # Mutation rate decays but never fully dies out (keeps diversity late in run)
     frac  = generation / number_of_generation
     rate  = max(0.01, mutation_rate * (1.0 - 0.8 * frac))
     scale = max(0.005, 0.15 * (1.0 - 0.8 * frac))
@@ -234,7 +200,6 @@ def mutate(chromosome, generation):
     return chromosome
 
 
-# ── Training loop ─────────────────────────────────────────────────────────────
 population = torch.tensor(initialize_population(), dtype=torch.float32, device=device)
 
 generation_history   = []
@@ -253,7 +218,6 @@ for generation in range(number_of_generation):
     generation_history.append(best_fitness)
     print(f"Gen {generation:3d} | Fitness: {best_fitness:.4f} | Best-ever: {true_best_fitness:.4f}")
 
-    # Build next generation
     new_pop = list(population[sorted_idx[:elite_size]])
     pop_np  = population.cpu().numpy()
 
@@ -267,13 +231,11 @@ for generation in range(number_of_generation):
     population = torch.stack(new_pop)
 
 
-# ── Final evaluation ──────────────────────────────────────────────────────────
 fitness_scores = evaluate_population(population)
 best_idx       = int(np.argmax(fitness_scores))
 best_chromosome = population[best_idx]
 
 def predict_all(x_np, chrom):
-    """Batched inference on CPU/GPU for final accuracy report."""
     s1 = input_layer_size  * hidden_layer_size
     s2 = hidden_layer_size * output_layer_size
     W1 = chrom[:s1].view(input_layer_size, hidden_layer_size)
@@ -296,7 +258,6 @@ for c in range(10):
     print(f"  Digit {c}: {accuracy_score(y_val[mask], all_preds[mask]):.3f}")
 
 
-# ── Save ──────────────────────────────────────────────────────────────────────
 np.save(os.path.join(current_dir, "ga_best_weights.npy"),
         true_best_chromosome.cpu().numpy())
 print("\nSaved model weights → ga_best_weights.npy")
